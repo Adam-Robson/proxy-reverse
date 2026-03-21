@@ -88,7 +88,7 @@ function stripHopByHop(headers: IncomingHttpHeaders): void {
 function applyHeaderRules(
   headers: IncomingHttpHeaders,
   rules: HeaderRules | undefined,
-  direction: "request",
+  _direction: "request",
 ): void {
   if (!rules) return;
 

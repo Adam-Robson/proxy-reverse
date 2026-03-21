@@ -26,7 +26,7 @@ export interface HeaderRules {
 
 export interface Route {
   match: string | RouteMatchFn;
-  upstream: Upstream[];
+  upstream?: Upstream[];
   rewrite?: RouteRewrite;
   headers?: HeaderRules;
   balancer?: BalancerStrategy;
