@@ -1,35 +1,6 @@
-# proxy-reverse
+# Node Reverse Proxy
 
-├── node_modules/
-├── shutdown/
-|   ├── utils/
-|   |   ├── config-loader.ts
-|   |   └── logger.ts
-|   └──index.ts
-├── src/
-|   ├── cli/
-|   |   └── index.ts
-|   └── core/
-│       ├── balancer.ts
-│       ├── headers.ts
-│       ├── http-handler.ts
-│       ├── proxy-server.ts
-│       ├── router.ts
-│       ├── types.ts
-│       └── ws-handler.ts
-├──tests/
-├   ├── balancer.test.ts
-|   ├── proxy-server.test.ts
-|   └── router.test.ts
-├── biome.json
-├── package-lock.json
-├── package.json
-├── README.md
-└── tsconfig.json
-
-## Node Reverse Proxy
-
-A composable, zero-dependency reverse proxy for Node.js with:
+A simply constructed &d zero-dependency reverse proxy for Node.js with:
 
 - **Route matching** — prefix strings or custom predicate functions
 - **Path rewriting** — strip prefix, add prefix, or full path replacement
@@ -240,7 +211,7 @@ import { ProxyServer, type ILoadBalancer, type Upstream } from "@your-scope/node
 class StickyBalancer implements ILoadBalancer {
   pick(upstreams: Upstream[]): Upstream {
     // e.g. session-affinity logic
-    return upstreams[0]!;
+    return upstreams[0];
   }
 }
 ```

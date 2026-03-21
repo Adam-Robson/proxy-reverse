@@ -13,11 +13,11 @@ export class RoundRobinBalancer implements ILoadBalancer {
 
   pick(upstreams: Upstream[]): Upstream {
     if (upstreams.length === 0) throw new Error("No upstreams available");
-    if (upstreams.length === 1) return upstreams[0]!;
+    if (upstreams.length === 1) return upstreams[0];
 
     const key = upstreams.map((u) => `${u.host}:${u.port}`).join(",");
     const count = this.counters.get(key) ?? 0;
-    const selected = upstreams[count % upstreams.length]!;
+    const selected = upstreams[count % upstreams.length];
     this.counters.set(key, count + 1);
     return selected;
   }
@@ -27,7 +27,7 @@ export class RandomBalancer implements ILoadBalancer {
   pick(upstreams: Upstream[]): Upstream {
     if (upstreams.length === 0) throw new Error("No upstreams available");
     const idx = Math.floor(Math.random() * upstreams.length);
-    return upstreams[idx]!;
+    return upstreams[idx];
   }
 }
 
@@ -44,7 +44,7 @@ export class WeightedBalancer implements ILoadBalancer {
     }
 
     // Fallback (floating point edge case)
-    return upstreams[upstreams.length - 1]!;
+    return upstreams[upstreams.length - 1];
   }
 }
 

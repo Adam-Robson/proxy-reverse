@@ -4,13 +4,17 @@
   "description": "A simple reverse proxy",
   "main": "dist/index.js",
   "scripts": {
-    "start": "node index.js"
+    "clear": "rm -rf dist",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "vitest"
   },
   "author": "Adam Robson",
   "license": "MIT",
   "devDependencies": {
     "@biomejs/biome": "2.4.7",
     "@types/node": "25.5.0",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "vitest": "4.1.0"
   }
 }
