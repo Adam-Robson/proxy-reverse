@@ -1,7 +1,6 @@
-import type { IncomingMessage, ServerResponse } from "node:http";
-import type { Route } from "@/lib/types/route";
-import type { Upstream } from '@/lib/types/upstream';
-
+import type { IncomingMessage, ServerResponse } from 'node:http';
+import type { Route } from './route';
+import type { Upstream } from './upstream';
 export interface Context {
   req: IncomingMessage;
   res: ServerResponse;
@@ -9,3 +8,4 @@ export interface Context {
   upstream: Upstream;
   targetPath: string;
 }
+  

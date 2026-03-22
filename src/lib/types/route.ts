@@ -1,13 +1,12 @@
-import type { RouteMatch } from '@/lib/types/route-match';
-import type { Upstream } from '@/lib/types/upstream';
-import type { HeaderRules } from './header-rules';
-import type { LoadBalancerStrategy } from './load-balancer-strategy';
+import type { HeaderRules } from '@@/types/header-rules';
+import type { RouteMatch } from '@@/types/route-match';
+import type { LoadBalancerStrategy } from '@/lib/types/load-balancer-strategy'
 import type { RouteRewrite } from './route-rewrite';
-
+import type { Upstream } from './upstream';
 
 export interface Route {
   match: string | RouteMatch;
-  upstream?: Upstream[];
+  upstreams: Upstream[];
   rewrite?: RouteRewrite;
   headers?: HeaderRules;
   balancer?: LoadBalancerStrategy;

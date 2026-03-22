@@ -1,6 +1,6 @@
 # Node Reverse Proxy
 
-A simply constructed &d zero-dependency reverse proxy for Node.js with:
+A composable, zero-dependency reverse proxy for Node.js with:
 
 - **Route matching** — prefix strings or custom predicate functions
 - **Path rewriting** — strip prefix, add prefix, or full path replacement
@@ -28,7 +28,7 @@ npx nrp --config ./proxy.config.json
 
 ### Options
 
-| Flag                  | Default               | Description                                   |
+|   Flag                |   Default             |   Description                                 |
 |-----------------------|-----------------------|-----------------------------------------------|
 | `-c, --config <path>` | `./proxy.config.json` | Path to config file (`.json` or `.js`/`.mjs`) |
 | `--log-level <level>` | `info`                | `debug`, `info`, `warn`, `error`, `silent`    |
@@ -136,53 +136,53 @@ const httpServer = server.httpServer;
 
 ### `ProxyConfig`
 
-| Field      | Type               | Default         | Description                          |
-|------------|--------------------|-----------------|--------------------------------------|
-| `port`     | `number`           | —               | Port to listen on                    |
-| `host`     | `string`           | `"0.0.0.0"`     | Host to bind                         |
-| `routes`   | `Route[]`          | —               | Ordered route list (first match wins)|
-| `headers`  | `HeaderRules`      | —               | Global header rules                  |
-| `balancer` | `BalancerStrategy` | `"round-robin"` | Default load-balancing strategy      |
-| `timeout`  | `number`           | `30000`         | Upstream request timeout (ms)        |
-| `forwardIp`| `boolean`          | `true`          | Append `X-Forwarded-For` header      |
+|     Field     |     Type           |    Default     |      Description                       |
+|---------------|--------------------|----------------|----------------------------------------|
+| `port`        | `number`           | —              | Port to listen on                      |
+| `host`        | `string`           | `"0.0.0.0"`    | Host to bind                           |
+| `routes`      | `Route[]`          | —              | Ordered roudte list (first match wins) |
+| `headers`     | `HeaderRules`      | —              | Global header rules                    |
+| `balancer`    | `BalancerStrategy` | `"round-robin"`| Default load-balancing strategy        |
+| `timeout`     | `number`           |    `30000`     | Upstream request timeout (ms)          |
+| `forwardIp`   | `boolean`          | `true`         | Append `X-Forwarded-For` header        |
 
 ### `Route`
 
-| Field      | Type               | Description                                        |
-|------------|--------------------|----------------------------------------------------|
-| `match`    | `string            |  (path: string) => boolean`, Prefix string         |
-| `upstreams`| `Upstream[]`       | One or more targets                                |
-| `rewrite`  | `RouteRewrite`     | Path rewrite rules                                 |
-| `headers`  | `HeaderRules`      | Per-route header rules (merged with global)        |
-| `balancer` | `BalancerStrategy` | Override the global balancer for this route        |
+| Field         | Type                                  | Description                                  |
+|---------------|---------------------------------------|----------------------------------------------|
+| `match`       | `string \| (path: string) => boolean` | Prefix string (`"/api"`) or custom predicate |
+| `upstreams`   | `Upstream[]`                          | One or more targets                          |
+| `rewrite`     | `RouteRewrite`                        | Path rewrite rules                           |
+| `headers`     | `HeaderRules`                         | Per-route header rules (merged with global)  |
+| `balancer`    | `BalancerStrategy`                    | Override the global balancer for this route  |
 
 ### `Upstream`
 
-| Field      | Type     | Default | Description                    |
-|------------|----------|---------|--------------------------------|
-| `host`     | `string` | —       | Hostname or IP                 |
-| `port`     | `number` | —       | Port                           |
-| `protocol` | `http(s)`| -       | Upstream  protocol             |
-| `weight`   | `number` | `1`     | Weight for `weighted` strategy |
+| Field        | Type         | Default | Description |
+|--------------|----------|---------|-------------|
+| `host`       | `string` | — | Hostname or IP |
+| `port`       | `number` | — | Port |
+| `protocol`   | `"http" \| "https"` | `"http"` | Upstream protocol |
+| `weight`     | `number` | `1` | Weight for `weighted` strategy |
 
 ### `RouteRewrite`
 
 Applied in order: `stripPrefix` → `addPrefix`. `replacePath` overrides both.
 
-| Field         | Type     |                Description                   |
-|---------------|----------|----------------------------------------------|
-| `stripPrefix` | `string` | Remove this prefix from the path             |
-| `addPrefix`   | `string` | Prepend this to the (possibly stripped) path |
-| `replacePath` | `string` | Replace the entire path with this value      |
+| Field | Type | Description |
+|---|---|---|
+| `stripPrefix` | `string` | Remove this prefix from the path |
+| `addPrefix` | `string` | Prepend this to the (possibly stripped) path |
+| `replacePath` | `string` | Replace the entire path with this value |
 
 ### `HeaderRules`
 
-| Field            | Type                     | Description                             |
-|------------------|--------------------------|-----------------------------------------|
-| `request`        | `Record<string, string>` | Set these on the forwarded request      |
-| `response`       | `Record<string, string>` | Set these on the response to the client |
-| `removeRequest`  | `string[]`               | Strip these from the forwarded request  |
-| `removeResponse` | `string[]`               | Strip these from the response           |
+| Field | Type | Description |
+|-------|------|-------------|
+| `request` | `Record<string, string>` | Set these on the forwarded request |
+| `response` | `Record<string, string>` | Set these on the response to the client |
+| `removeRequest` | `string[]` | Strip these from the forwarded request |
+| `removeResponse` | `string[]` | Strip these from the response |
 
 ### `BalancerStrategy`
 
@@ -211,7 +211,7 @@ import { ProxyServer, type ILoadBalancer, type Upstream } from "@your-scope/node
 class StickyBalancer implements ILoadBalancer {
   pick(upstreams: Upstream[]): Upstream {
     // e.g. session-affinity logic
-    return upstreams[0];
+    return upstreams[0]!;
   }
 }
 ```

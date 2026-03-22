@@ -1,4 +1,4 @@
-import type { Context } from '@/lib/types/context';
+import type { Context } from '@@/types/context';
 
 export interface Hooks {
   onRequest?: (ctx: Omit<Context, "res">) => boolean | Promise<boolean>;
