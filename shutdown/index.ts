@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import process from "node:process";
-import { loadConfig } from "../utils/config-loader.js";
-import { ProxyServer } from "../core/proxy-server.js";
-import { Logger } from "../utils/logger.js";
+import { loadConfig } from "./utils/config-loader.js";
+import { ProxyServer } from "./core/proxy-server.js";
+import { Logger } from "./utils/logger.js";
 import type { LogLevel } from "../utils/logger.js";
 
 // ── Arg parsing (no deps — keeps the package lean) ───────────────────────────
