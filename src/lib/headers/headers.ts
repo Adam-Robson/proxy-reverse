@@ -1,6 +1,6 @@
-import { applyHeaderRules } from "@/lib/headers/apply-header-rules";
-import { buildRequestHeaders } from '@/lib/headers/build-request-headers';
-import type { HeaderRules } from "@@/types/header-rules";
+import { applyHeaderRules } from "@/lib/headers/apply-header-rules.js";
+import { buildRequestHeaders } from '@/lib/headers/build-request-headers.js';
+import type { HeaderRules } from "@@/types/header-rules.js";
 import type { IncomingHttpHeaders, IncomingMessage, OutgoingHttpHeaders } from "node:http";
 
 export class Headers {

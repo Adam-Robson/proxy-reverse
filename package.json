@@ -1,8 +1,25 @@
 {
   "name": "proxy-reverse",
   "version": "1.0.0",
+  "type": "module",
   "description": "A simple reverse proxy",
   "main": "dist/src/index.js",
+  "module": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "module": "./dist/src/index.js",
+      "require": "./dist/src/index.js"
+    }
+  },
+  "bin": {
+    "nrp": "./dist/src/cli/index.js"
+  },
+  "files": ["dist"],
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "clear": "rm -rf dist",
     "build": "npm run clear && tsc",

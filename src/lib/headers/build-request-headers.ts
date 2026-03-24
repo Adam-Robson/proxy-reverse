@@ -27,7 +27,7 @@ export function buildRequestHeaders(
     const clientIp = req.socket.remoteAddress ?? "unknown";
     headers["x-forwarded-for"] = existing ? `${existing}, ${clientIp}` : clientIp;
     headers["x-forwarded-proto"] ??= "http";
-    headers["x-forwarded-host"] ??= req.headers["host"] ?? "";
+    headers["x-forwarded-host"] ??= req.headers.host ?? "";
   }
 
   applyHeaderRules(headers, globalRules, "request");

@@ -1,5 +1,5 @@
+import type { HeaderRules } from '@@/types/header-rules.js';
 import type { ServerResponse } from 'node:http';
-import type { HeaderRules } from '@@/types/header-rules';
 
 /**
  * Apply response header rules before sending back to the client.

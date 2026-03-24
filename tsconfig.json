@@ -2,15 +2,19 @@
   "compilerOptions": {
     "moduleResolution": "nodenext",
     "module": "nodenext",
-    "target": "esnext",
-    "lib": ["esnext"],
+    "target": "es2022",
+    "lib": ["es2022"],
     "rootDir": "./",
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": true,
     "paths": {
       "@/*": ["./src/*"],
       "@@/*": ["./src/lib/*"]
     },
     "types": ["node"],
     "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
     "outDir": "./dist",
     "removeComments": true,
     "noEmitOnError": true,
@@ -22,5 +26,5 @@
     "skipLibCheck": true
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts"],
+  "exclude": ["node_modules", "dist", "tests", "scripts"],
 }

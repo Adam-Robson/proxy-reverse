@@ -1,8 +1,8 @@
-import type { HeaderRules } from '@@/types/header-rules';
-import type { RouteMatch } from '@@/types/route-match';
-import type { LoadBalancerStrategy } from '@/lib/types/load-balancer-strategy'
-import type { RouteRewrite } from './route-rewrite';
-import type { Upstream } from './upstream';
+import type { HeaderRules } from '@@/types/header-rules.js';
+import type { RouteMatch } from '@@/types/route-match.js';
+import type { LoadBalancerStrategy } from '@/lib/types/load-balancer-strategy.js'
+import type { RouteRewrite } from './route-rewrite.js';
+import type { Upstream } from './upstream.js';
 
 /**
  * Route configuration for the reverse proxy server.
