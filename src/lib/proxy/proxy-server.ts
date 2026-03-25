@@ -10,7 +10,7 @@ export class ProxyServer {
   private readonly handler: HttpHandler;
 
   constructor(
-    private readonly config: ConfigType,
+    config: ConfigType,
     hooks: Hooks = {},
   ) {
     this.handler = new HttpHandler(config, hooks);
@@ -25,12 +25,12 @@ export class ProxyServer {
     });
 
     this.server.on("upgrade", (req, socket: Duplex, head) => {
-      handleWebSocketUpgrade(req, socket, head, this.config);
+      handleWebSocketUpgrade(req, socket, head, this.handler);
     });
   }
 
   listen(): Promise<void> {
-    const { port, host = "0.0.0.0" } = this.config;
+    const { port, host = "0.0.0.0" } = this.handler.config;
     return new Promise((resolve) => {
       this.server.listen(port, host, () => {
         resolve();

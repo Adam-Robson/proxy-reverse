@@ -1,8 +1,8 @@
 {
-  "name": "proxy-reverse",
+  "name": "@responsedotok/nrp",
   "version": "1.0.0",
   "type": "module",
-  "description": "A simple reverse proxy",
+  "description": "A composable, zero-dependency Node.js reverse proxy with routing, load balancing, WebSocket support, and lifecycle hooks",
   "main": "dist/src/index.js",
   "module": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
@@ -21,10 +21,13 @@
     "node": ">=22"
   },
   "scripts": {
-    "clear": "rm -rf dist",
-    "build": "npm run clear && tsc",
-    "start": "node dist/src/index.js",
-    "test": "vitest"
+    "build": "node scripts/build.mjs",
+    "dev": "tsc --watch",
+    "test": "vitest",
+    "lint": "biome check src",
+    "format": "biome format --write src",
+    "prepublishOnly": "npm run build && npm run test",
+    "start": "node dist/src/index.js"
   },
   "author": "Adam Robson",
   "license": "MIT",

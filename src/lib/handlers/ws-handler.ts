@@ -1,25 +1,26 @@
 import net from 'node:net';
 import type { IncomingMessage } from 'node:http';
 import type { Duplex } from 'node:stream';
-import type { ConfigType } from '@@/types/config.js';
 import { matchRoute } from '@/lib/router/match-route.js';
+import { rewritePath } from '@/lib/router/rewrite-path.js';
 import { buildRequestHeaders } from '@/lib/headers/build-request-headers.js';
+import type { HttpHandler } from '@/lib/handlers/http-handler.js';
 
 /**
- * Hanle WebSocket upgrade requests by tunneling raw TCP between the client and the upstream server.
+ * Handle WebSocket upgrade requests by tunneling raw TCP between the client and the upstream server.
  * @param req The incoming HTTP request.
- * @param socket The network socket between the client and the proxy.
+ * @param clientSocket The network socket between the client and the proxy.
  * @param head The first packet of the upgraded stream.
- * @param config The proxy server configuration.
+ * @param handler The HttpHandler instance — used for route matching, load balancer state, and config.
  * @returns A promise that resolves when the WebSocket connection has been established.
- *
  */
 export async function handleWebSocketUpgrade(
   req: IncomingMessage,
   clientSocket: Duplex,
   head: Buffer,
-  config: ConfigType
+  handler: HttpHandler
 ): Promise<void> {
+  const { config } = handler;
   const url = new URL(req.url ?? "/", "http://localhost");
   const route = matchRoute(config.routes, url.pathname);
 
@@ -29,14 +30,15 @@ export async function handleWebSocketUpgrade(
     return;
   }
 
-  const upstreams = route.upstreams;
-  const upstream = upstreams[Math.floor(Math.random() * upstreams.length)];
+  const upstream = handler.getBalancer(route).pick(route.upstreams);
 
   if (!upstream) {
     clientSocket.write('HTTP/1.1 502 Bad Gateway\r\n\r\n');
     clientSocket.destroy();
     return;
   }
+
+  const targetPath = rewritePath(url.pathname, route.rewrite) + (url.search ?? "");
 
   const upgradeHeaders = buildRequestHeaders(
     req,
@@ -46,7 +48,7 @@ export async function handleWebSocketUpgrade(
     config.forwardIp ?? true,
   );
 
-  const requestLine = `${req.method ?? 'GET'} ${req.url ?? '/'} HTTP/1.1\r\n`;
+  const requestLine = `${req.method ?? 'GET'} ${targetPath} HTTP/1.1\r\n`;
   const headerBlock = `${Object.entries(upgradeHeaders)
     .filter(([_, v]) => v !== undefined)
     .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(', ') : v}`)
@@ -68,7 +70,6 @@ export async function handleWebSocketUpgrade(
     console.error(`[ws] upstream error: ${err.message}`);
     clientSocket.destroy();
   });
-
 
   clientSocket.on("error", () => {
     upstreamSocket.destroy();

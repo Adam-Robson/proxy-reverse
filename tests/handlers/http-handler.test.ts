@@ -1,5 +1,5 @@
 import http from 'node:http';
-import { HttpHandler } from '@@/handlers/http-handler.js';
+import { HttpHandler } from '@/lib/handlers/http-handler.js';
 import type { ConfigType } from '@@/types/config.js';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
@@ -87,7 +87,7 @@ describe('HttpHandler', () => {
 		srv.server.close();
 	});
 
-	it('does not forward to upstream when onRequest returns false', async () => {
+	it('returns 403 and does not forward to upstream when onRequest returns false', async () => {
 		const upstreamCalled = vi.fn();
 		const up = await startServer((_req, res) => {
 			upstreamCalled();
@@ -101,15 +101,11 @@ describe('HttpHandler', () => {
 		const handler = new HttpHandler(config, { onRequest: () => false });
 		const srv = await startServer((req, res) => handler.handle(req, res));
 
-		const req = http.request({ host: '127.0.0.1', port: srv.port, path: '/ping' });
-		req.on('error', () => {}); // swallow error from forced close
-		req.end();
-		await new Promise((r) => setTimeout(r, 100));
+		const { status } = await request(srv.port, '/ping');
 
+		expect(status).toBe(403);
 		expect(upstreamCalled).not.toHaveBeenCalled();
-		srv.server.closeAllConnections();
 		srv.server.close();
-		up.server.closeAllConnections();
 		up.server.close();
 	});
 

@@ -22,7 +22,7 @@ export class HttpHandler {
   private readonly globalBalancer: LoadBalancer;
 
   constructor(
-    private readonly config: ConfigType,
+    readonly config: ConfigType,
     private readonly hooks: Hooks = {},
   ) {
     this.globalBalancer = createBalancer(config.balancer ?? "round-robin");
@@ -53,7 +53,10 @@ export class HttpHandler {
     // onRequest hook — abort if returns false
     if (this.hooks.onRequest) {
       const proceed = await this.hooks.onRequest({ req, route, upstream, targetPath });
-      if (!proceed) return;
+      if (!proceed) {
+        this.sendError(res, 403, "Forbidden");
+        return;
+      }
     }
 
     await this.forward(ctx);
@@ -128,7 +131,7 @@ export class HttpHandler {
    * @param route The route for which to get the load balancer.
    * @returns The load balancer to use for the route.
    */
-  private getBalancer(route: { upstreams: Upstream[]; balancer?: string }): LoadBalancer {
+  getBalancer(route: { upstreams: Upstream[]; balancer?: string }): LoadBalancer {
     if (!route.balancer) return this.globalBalancer;
 
     const key = route.balancer;

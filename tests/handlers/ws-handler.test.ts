@@ -1,6 +1,7 @@
 import type { Duplex } from 'node:stream';
 import { describe, expect, it, vi } from 'vitest';
-import { handleWebSocketUpgrade } from '@@/handlers/ws-handler.js';
+import { HttpHandler } from '@/lib/handlers/http-handler.js';
+import { handleWebSocketUpgrade } from '@/lib/handlers/ws-handler.js';
 import type { ConfigType } from '@@/types/config.js';
 
 function mockSocket() {
@@ -28,8 +29,9 @@ const config: ConfigType = {
 
 describe('handleWebSocketUpgrade', () => {
 	it('sends 502 and destroys socket when no route matches', async () => {
+		const handler = new HttpHandler(config);
 		const socket = mockSocket();
-		await handleWebSocketUpgrade(mockReq('/unknown'), socket, Buffer.alloc(0), config);
+		await handleWebSocketUpgrade(mockReq('/unknown'), socket, Buffer.alloc(0), handler);
 		expect(socket.write).toHaveBeenCalledWith('HTTP/1.1 502 Bad Gateway\r\n\r\n');
 		expect(socket.destroy).toHaveBeenCalled();
 	});
@@ -39,8 +41,9 @@ describe('handleWebSocketUpgrade', () => {
 			port: 8080,
 			routes: [{ match: '/ws', upstreams: [] }],
 		};
+		const handler = new HttpHandler(cfg);
 		const socket = mockSocket();
-		await handleWebSocketUpgrade(mockReq('/ws'), socket, Buffer.alloc(0), cfg);
+		await handleWebSocketUpgrade(mockReq('/ws'), socket, Buffer.alloc(0), handler);
 		expect(socket.write).toHaveBeenCalledWith('HTTP/1.1 502 Bad Gateway\r\n\r\n');
 		expect(socket.destroy).toHaveBeenCalled();
 	});
