@@ -1,6 +1,6 @@
-import type { HeaderRules } from '@@/types/header-rules';
-import type { LoadBalancerStrategy } from "@@/types/load-balancer-strategy";
-import type { Route } from "@@/types/route";
+import type { HeaderRules } from '@@/types/header-rules.js';
+import type { LoadBalancerStrategy } from "@@/types/load-balancer-strategy.js";
+import type { Route } from "@@/types/route.js";
 
 /**
  * Configuration for the reverse proxy server.

@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import type { ConfigType } from '@/lib/types/config';
+import type { ConfigType } from '@/lib/types/config.js';
 
 function validate(configFile: unknown, source: string) {
   if (!configFile || typeof configFile !== 'object') {

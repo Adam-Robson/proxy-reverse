@@ -1,6 +1,6 @@
-import { applyHeaderRules } from '@/lib/headers/apply-header-rules';
-import { stripHeaders } from '@/lib/headers/strip-headers';
-import type { HeaderRules } from "@@/types/header-rules";
+import { applyHeaderRules } from '@/lib/headers/apply-header-rules.js';
+import { stripHeaders } from '@/lib/headers/strip-headers.js';
+import type { HeaderRules } from "@@/types/header-rules.js";
 import type { IncomingHttpHeaders, IncomingMessage } from "node:http";
 
 /**
