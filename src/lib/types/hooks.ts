@@ -1,4 +1,4 @@
-import type { Context } from '@@/types/context';
+import type { Context } from '@@/types/context.js';
 
 /**
  * Hooks for the reverse proxy server.

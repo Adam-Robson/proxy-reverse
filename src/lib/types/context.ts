@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import type { Route } from './route';
-import type { Upstream } from './upstream';
+import type { Route } from './route.js';
+import type { Upstream } from './upstream.js';
 
 /**
  * Context for a single request being processed by the reverse proxy.

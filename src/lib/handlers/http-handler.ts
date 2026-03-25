@@ -72,8 +72,8 @@ export class HttpHandler {
 
       const forwardHeaders = buildRequestHeaders(
         req,
-        this.config.headers,
-        route.headers,
+        this.config.headers ?? null,
+        route.headers ?? null,
         upstream,
         this.config.forwardIp ?? true,
       );
