@@ -11,8 +11,10 @@ export function parseArgs(argv: string[]): { config: string; logLevel: LogLevel;
     if (arg === '--help' || arg === '-h') {
       help = true;
     } else if (arg === '--config' || arg === '-c') {
+      if (i + 1 >= args.length) throw new Error(`Missing value for ${arg}`);
       config = args[++i] as string;
     } else if (arg === '--log-level' || arg === '-l') {
+      if (i + 1 >= args.length) throw new Error(`Missing value for ${arg}`);
       logLevel = args[++i] as LogLevel;
     }
   }

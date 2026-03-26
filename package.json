@@ -14,7 +14,7 @@
     }
   },
   "bin": {
-    "nrp": "./dist/src/cli/index.js"
+    "nrp": "./dist/src/index.js"
   },
   "files": ["dist"],
   "engines": {

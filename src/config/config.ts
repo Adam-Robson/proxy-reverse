@@ -12,6 +12,9 @@ function validate(configFile: unknown, source: string) {
   if (typeof cfg.port !== 'number') {
     throw new Error(`Config in ${source} must have a numeric "port" property`);
   }
+  if (cfg.port < 1 || cfg.port > 65535 || !Number.isInteger(cfg.port)) {
+    throw new Error(`Config in ${source} port must be an integer between 1 and 65535`);
+  }
 
   if (!Array.isArray(cfg.routes) || cfg.routes.length === 0) {
     throw new Error(`Config in ${source} must have a non-empty "routes" array`);
@@ -28,6 +31,11 @@ function validate(configFile: unknown, source: string) {
       if (!u.host || typeof u.port !== 'number') {
         throw new Error(
           `Config in ${source} is required to have Number for port and String for host.`
+        );
+      }
+      if (u.port < 1 || u.port > 65535 || !Number.isInteger(u.port)) {
+        throw new Error(
+          `Config in ${source} upstream port must be an integer between 1 and 65535.`
         );
       }
     }

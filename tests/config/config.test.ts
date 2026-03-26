@@ -90,6 +90,38 @@ describe('loadConfig', () => {
 		);
 		await expect(loadConfig(filePath)).rejects.toThrow();
 	});
+
+	it('throws when server port is 0', async () => {
+		const filePath = await writeTempFile(
+			JSON.stringify({ port: 0, routes: [{ match: '/', upstreams: [{ host: 'a', port: 80 }] }] }),
+			'.json',
+		);
+		await expect(loadConfig(filePath)).rejects.toThrow('1 and 65535');
+	});
+
+	it('throws when server port exceeds 65535', async () => {
+		const filePath = await writeTempFile(
+			JSON.stringify({ port: 99999, routes: [{ match: '/', upstreams: [{ host: 'a', port: 80 }] }] }),
+			'.json',
+		);
+		await expect(loadConfig(filePath)).rejects.toThrow('1 and 65535');
+	});
+
+	it('throws when server port is a float', async () => {
+		const filePath = await writeTempFile(
+			JSON.stringify({ port: 80.5, routes: [{ match: '/', upstreams: [{ host: 'a', port: 80 }] }] }),
+			'.json',
+		);
+		await expect(loadConfig(filePath)).rejects.toThrow('1 and 65535');
+	});
+
+	it('throws when upstream port is out of range', async () => {
+		const filePath = await writeTempFile(
+			JSON.stringify({ port: 8080, routes: [{ match: '/', upstreams: [{ host: 'a', port: 99999 }] }] }),
+			'.json',
+		);
+		await expect(loadConfig(filePath)).rejects.toThrow('1 and 65535');
+	});
 });
 
 describe('Config', () => {

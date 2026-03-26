@@ -23,4 +23,6 @@ export interface ConfigType {
   balancer?: LoadBalancerStrategy;
   timeout?: number;
   forwardIp?: boolean;
+  maxBodySize?: number;
+  healthCheck?: { interval?: number; timeout?: number; };
 }

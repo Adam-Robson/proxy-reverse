@@ -6,6 +6,7 @@ export class WeightedBalancer implements LoadBalancer {
     if (upstreams.length === 0) throw new Error("No upstreams available");
 
     const total = upstreams.reduce((sum, u) => sum + (u.weight ?? 1), 0);
+    if (total <= 0) throw new Error("Weighted balancer requires at least one upstream with a positive weight");
     let threshold = Math.random() * total;
 
     for (const upstream of upstreams) {

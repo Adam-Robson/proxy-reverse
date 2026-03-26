@@ -15,7 +15,7 @@ export class RoundRobinBalancer implements LoadBalancer {
     const count = this.counters.get(key) ?? 0;
     const selected = upstreams[count % upstreams.length] as Upstream;
 
-    this.counters.set(key, count + 1);
+    this.counters.set(key, (count + 1) % upstreams.length);
     return selected; 
   }
 }

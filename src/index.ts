@@ -1,5 +1,14 @@
 #!/usr/bin/env node
 
+export { createProxy, ProxyServer } from '@/lib/proxy/proxy-server.js';
+export type { ConfigType } from '@/lib/types/config.js';
+export type { Context } from '@/lib/types/context.js';
+export type { HeaderRules } from '@/lib/types/header-rules.js';
+export type { Hooks } from '@/lib/types/hooks.js';
+export type { LoadBalancerStrategy } from '@/lib/types/load-balancer-strategy.js';
+export type { RouteRewrite } from '@/lib/types/route-rewrite.js';
+export type { Route } from '@/lib/types/route.js';
+export type { Upstream } from '@/lib/types/upstream.js';
 import { parseArgs } from '@/cli/parse-args.js';
 import { printHelp } from '@/cli/print-help.js';
 import process from 'node:process';

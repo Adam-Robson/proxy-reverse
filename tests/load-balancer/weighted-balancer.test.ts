@@ -45,4 +45,20 @@ describe('WeightedBalancer', () => {
 		vi.spyOn(Math, 'random').mockReturnValue(0);
 		expect(new WeightedBalancer().pick(upstreams)).toBe(upstreams[0]);
 	});
+
+	it('throws when all weights are zero', () => {
+		const upstreams: Upstream[] = [
+			{ host: 'a', port: 1, weight: 0 },
+			{ host: 'b', port: 2, weight: 0 },
+		];
+		expect(() => new WeightedBalancer().pick(upstreams)).toThrow('positive weight');
+	});
+
+	it('throws when all weights are negative', () => {
+		const upstreams: Upstream[] = [
+			{ host: 'a', port: 1, weight: -1 },
+			{ host: 'b', port: 2, weight: -2 },
+		];
+		expect(() => new WeightedBalancer().pick(upstreams)).toThrow('positive weight');
+	});
 });

@@ -108,9 +108,9 @@ fs.writeFileSync(
 );
 
 const candidates = [
-  path.join(DIST, "cli", "index.mjs"),
-  path.join(DIST, "cli", "index.js"),
-  path.join(DIST, "cjs", "cli", "index.js"),
+  path.join(DIST, "src", "index.mjs"),
+  path.join(DIST, "src", "index.js"),
+  path.join(DIST, "cjs", "src", "index.js"),
 ];
 for (const f of candidates) {
   if (fs.existsSync(f)) {

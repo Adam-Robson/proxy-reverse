@@ -21,4 +21,6 @@ export interface Route {
   rewrite?: RouteRewrite;
   headers?: HeaderRules;
   balancer?: LoadBalancerStrategy;
+  timeout?: number;
+  maxBodySize?: number;
 }

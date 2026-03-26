@@ -20,14 +20,14 @@ export function applyResponseHeaders(
     ...(globalRules?.removeResponse ?? []),
     ...(routeRules?.removeResponse ?? []),
   ]) {
-    res.removeHeader(key);
+    res.removeHeader(key.toLowerCase());
   }
 
   // Set/override headers
   for (const rules of [globalRules?.response, routeRules?.response]) {
     if (!rules) continue;
     for (const [key, value] of Object.entries(rules)) {
-      res.setHeader(key, value);
+      res.setHeader(key.toLowerCase(), value);
     }
   }
 }
