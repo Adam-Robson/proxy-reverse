@@ -1,5 +1,5 @@
-import type { IncomingHttpHeaders, OutgoingHttpHeaders } from 'node:http';
-import type { HeaderRules } from '@@/types/header-rules.js';
+import type { HeaderRules } from "@@/types/header-rules.js";
+import type { IncomingHttpHeaders, OutgoingHttpHeaders } from "node:http";
 
 /**
  * Apply header rules to the given headers.
@@ -9,25 +9,25 @@ import type { HeaderRules } from '@@/types/header-rules.js';
  * @returns void
  */
 export function applyHeaderRules(
-  headers: IncomingHttpHeaders | OutgoingHttpHeaders,
-  rules: HeaderRules | null,
-  direction: "request" | "response",
+	headers: IncomingHttpHeaders | OutgoingHttpHeaders,
+	rules: HeaderRules | null,
+	direction: "request" | "response",
 ): void {
-  if (!rules) return;
+	if (!rules) return;
 
-  if (direction === 'request') {
-    for (const k of rules.removeRequest ?? []) {
-      delete headers[k.toLowerCase()]
-    }
-    for (const [k, v] of Object.entries(rules.request ?? {})) {
-      headers[k.toLowerCase()] = v;
-    }
-  } else if (direction === 'response') {
-    for (const k of rules.removeResponse ?? []) {
-      delete headers[k.toLowerCase()]
-    }
-    for (const [k, v] of Object.entries(rules.response ?? {})) {
-      headers[k.toLowerCase()] = v;
-    }
-  }
+	if (direction === "request") {
+		for (const k of rules.removeRequest ?? []) {
+			delete headers[k.toLowerCase()];
+		}
+		for (const [k, v] of Object.entries(rules.request ?? {})) {
+			headers[k.toLowerCase()] = v;
+		}
+	} else if (direction === "response") {
+		for (const k of rules.removeResponse ?? []) {
+			delete headers[k.toLowerCase()];
+		}
+		for (const [k, v] of Object.entries(rules.response ?? {})) {
+			headers[k.toLowerCase()] = v;
+		}
+	}
 }

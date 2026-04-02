@@ -1,7 +1,6 @@
-
 /**
  * Header rules for the reverse proxy server.
- * 
+ *
  * @property {Record<string, string>} [request] - Headers to add or override for outgoing requests
  * @property {Record<string, string>} [response] - Headers to add or override for incoming responses
  * @property {string[]} [removeRequest] - Headers to remove from outgoing requests
@@ -9,8 +8,8 @@
  *
  */
 export interface HeaderRules {
-  request?: Record<string, string>;
-  response?: Record<string, string>;
-  removeRequest?: string[];
-  removeResponse?: string[];
+	request?: Record<string, string>;
+	response?: Record<string, string>;
+	removeRequest?: string[];
+	removeResponse?: string[];
 }

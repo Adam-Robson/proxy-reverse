@@ -1,10 +1,10 @@
-import type { HeaderRules } from '@@/types/header-rules.js';
+import type { HeaderRules } from "@@/types/header-rules.js";
 import type { LoadBalancerStrategy } from "@@/types/load-balancer-strategy.js";
 import type { Route } from "@@/types/route.js";
 
 /**
  * Configuration for the reverse proxy server.
- * 
+ *
  * @property {number} port - Port the proxy server listens on (default: 8080)
  * @property {string} [host] - Host the proxy server listens on (default: "0.0.0.0")
  * @property {Route[]} routes - Ordered list of route definitions
@@ -12,17 +12,17 @@ import type { Route } from "@@/types/route.js";
  * @property {LoadBalancerStrategy} [balancer] - Default load-balancing strategy (default: "round-robin")
  * @property {number} [timeout] - Proxy request timeout in ms (default: 30_000)
  * @property {boolean} [forwardIp] - Forward the client's IP via X-Forwarded-For (default: true)
- * 
+ *
  */
 
 export interface ConfigType {
-  port: number;
-  host?: string;
-  routes: Route[];
-  headers?: HeaderRules;
-  balancer?: LoadBalancerStrategy;
-  timeout?: number;
-  forwardIp?: boolean;
-  maxBodySize?: number;
-  healthCheck?: { interval?: number; timeout?: number; };
+	port: number;
+	host?: string;
+	routes: Route[];
+	headers?: HeaderRules;
+	balancer?: LoadBalancerStrategy;
+	timeout?: number;
+	forwardIp?: boolean;
+	maxBodySize?: number;
+	healthCheck?: { interval?: number; timeout?: number };
 }
