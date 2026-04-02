@@ -1,61 +1,87 @@
 # nrp — Node Reverse Proxy
 
-A composable, **zero-dependency** reverse proxy for Node.js.
-Works as a **standalone CLI** (`nrp`) or as a **programmatic library**.
+A **zero-dependency** reverse proxy for Node.js. Route incoming HTTP and WebSocket traffic to one or more upstream servers with load balancing, health checks, path rewriting, and header control. Use it as a **CLI tool** or import it as a **library** in your own code.
 
-## Features
+**Requires Node.js 22+.**
 
-- Route matching — prefix strings or custom predicate functions
-- Path rewriting — strip prefix, add prefix, or full path replacement
-- Header manipulation — set/remove headers globally or per-route
-- WebSocket proxying — transparent TCP tunnel for upgrade requests (HTTP and HTTPS upstreams)
-- Load balancing — round-robin, random, or weighted strategies with automatic upstream failover
-- Upstream health checks — periodic TCP probes with automatic exclusion of unhealthy upstreams
-- Request size limiting — per-route or global `maxBodySize` with `413` enforcement
-- Per-route timeouts — override the global upstream timeout on individual routes
-- Lifecycle hooks — intercept and control requests/responses
-- HTTP keep-alive connection pooling — persistent connections to upstreams
-- Graceful shutdown — drains in-flight requests before closing
-- Structured JSON logging with configurable log levels
+## Quick start
 
-## Contents
-
-- [Install](#install)
-- [Quick start](#quick-start)
-- [CLI](#cli)
-- [Programmatic API](#programmatic-api)
-- [Config reference](#config-reference)
-- [Routing](#routing)
-- [Path rewriting](#path-rewriting)
-- [Header management](#header-management)
-- [Load balancing](#load-balancing)
-- [Health checks](#health-checks)
-- [Request size limits](#request-size-limits)
-- [WebSocket proxying](#websocket-proxying)
-- [Logging](#logging)
-- [Building and publishing](#building-and-publishing)
-
-## Install
+Install:
 
 ```bash
 npm install @responsedotok/nrp
 ```
 
-Or install globally to use the CLI anywhere:
+Create a config file (`proxy.config.json`):
 
-```bash
-npm install -g @responsedotok/nrp
+```json
+{
+  "port": 8080,
+  "routes": [
+    {
+      "match": "/api",
+      "rewrite": { "stripPrefix": "/api" },
+      "upstreams": [{ "host": "localhost", "port": 3001 }]
+    },
+    {
+      "match": "/",
+      "upstreams": [{ "host": "localhost", "port": 3000 }]
+    }
+  ]
+}
 ```
 
-## Quick start
-
-**Via CLI:**
+Run it:
 
 ```bash
-nrp --config ./proxy.config.json
+npx nrp --config ./proxy.config.json
 ```
 
-**Via code:**
+This listens on port 8080 and forwards `/api/*` requests to port 3001 (stripping the `/api` prefix) and everything else to port 3000.
+
+## What it does
+
+| Feature | Summary |
+| --- | --- |
+| **Routing** | Match requests by URL prefix or a custom function. First match wins. |
+| **Path rewriting** | Strip a prefix, add a prefix, or replace the entire path before forwarding. |
+| **Header control** | Add, override, or remove request/response headers globally or per-route. |
+| **WebSocket proxying** | Transparent TCP tunnel for `Upgrade` requests. No extra config needed. |
+| **Load balancing** | Round-robin, random, or weighted distribution across multiple upstreams. |
+| **Health checks** | Periodic TCP probes automatically remove unhealthy upstreams from rotation. |
+| **Request size limits** | Reject oversized bodies with `413` before connecting upstream. |
+| **Lifecycle hooks** | Intercept requests, inspect responses, and handle errors in code. |
+| **Graceful shutdown** | Drains in-flight requests before closing the server. |
+
+---
+
+## CLI reference
+
+```bash
+nrp [options]
+```
+
+| Flag | Short | Default | Description |
+| --- | --- | --- | --- |
+| `--config <path>` | `-c` | `./proxy.config.json` | Path to config file |
+| `--log-level <level>` | `-l` | `info` | `debug`, `info`, `warn`, `error`, or `silent` |
+| `--help` | `-h` | -- | Print help and exit |
+
+Config files can be `.json`, `.js`/`.mjs` (ES module default export), or `.ts`.
+
+Logs are newline-delimited JSON. Pipe to `pino-pretty` for human-readable output:
+
+```bash
+nrp -c ./proxy.config.json -l debug | npx pino-pretty
+```
+
+---
+
+## Using nrp as a library
+
+### createProxy (quick setup)
+
+Creates a server, starts listening, and returns it:
 
 ```ts
 import { createProxy } from "@responsedotok/nrp";
@@ -78,243 +104,110 @@ const proxy = await createProxy({
 process.on("SIGTERM", () => proxy.close());
 ```
 
-## CLI
+### ProxyServer (full control)
 
-```text
-nrp [options]
-```
-
-| Flag | Short | Default | Description |
-| --- | --- | --- | --- |
-| `--config <path>` | `-c` | `./proxy.config.json` | Path to config file |
-| `--log-level <level>` | `-l` | `info` | One of: `debug`, `info`, `warn`, `error`, `silent` |
-| `--help` | `-h` | — | Print help and exit |
-
-```bash
-nrp --config ./config/production.json --log-level debug
-nrp -c ./config/staging.json -l warn
-```
-
-### Config file formats
-
-| Extension | Format |
-| --- | --- |
-| `.json` | Plain JSON object |
-| `.js` / `.mjs` | ES module with `export default { ... }` |
-| `.ts` | TypeScript file with `export default { ... }` |
-
-**JSON example (`proxy.config.json`):**
-
-```json
-{
-  "port": 8080,
-  "host": "0.0.0.0",
-  "balancer": "round-robin",
-  "timeout": 30000,
-  "maxBodySize": 10485760,
-  "forwardIp": true,
-  "healthCheck": { "interval": 30000, "timeout": 5000 },
-  "headers": {
-    "response": { "X-Powered-By": "nrp" },
-    "removeResponse": ["server"]
-  },
-  "routes": [
-    {
-      "match": "/api",
-      "rewrite": { "stripPrefix": "/api" },
-      "timeout": 10000,
-      "maxBodySize": 1048576,
-      "upstreams": [
-        { "host": "localhost", "port": 3001, "weight": 2 },
-        { "host": "localhost", "port": 3002, "weight": 1 }
-      ],
-      "balancer": "weighted",
-      "headers": {
-        "request": { "X-Internal": "true" }
-      }
-    },
-    {
-      "match": "/ws",
-      "upstreams": [{ "host": "localhost", "port": 4000 }]
-    },
-    {
-      "match": "/",
-      "upstreams": [{ "host": "localhost", "port": 3000 }]
-    }
-  ]
-}
-```
-
-**TypeScript/JS example (`proxy.config.ts`):**
-
-```ts
-import type { ConfigType } from "@responsedotok/nrp";
-
-export default {
-  port: 8080,
-  routes: [
-    {
-      match: (pathname) => pathname.startsWith("/api/v2"),
-      upstreams: [{ host: "localhost", port: 3001 }],
-    },
-    {
-      match: "/",
-      upstreams: [{ host: "localhost", port: 3000 }],
-    },
-  ],
-} satisfies ConfigType;
-```
-
-## Programmatic API
-
-### createProxy
-
-Convenience factory that creates a `ProxyServer`, calls `listen()`, and returns it.
-
-```ts
-import { createProxy } from "@responsedotok/nrp";
-import type { ConfigType, Hooks } from "@responsedotok/nrp";
-
-const hooks: Hooks = {
-  onRequest(ctx) {
-    console.log(`→ ${ctx.req.method} ${ctx.req.url}`);
-    return true; // return false to send a 403 and abort
-  },
-  onResponse(ctx, statusCode) {
-    console.log(`← ${statusCode}`);
-  },
-  onError(err, ctx) {
-    console.error(err.message, ctx.req?.url);
-  },
-};
-
-const proxy = await createProxy({ port: 8080, routes: [...] }, hooks);
-process.on("SIGTERM", () => proxy.close());
-```
-
-### ProxyServer class
-
-Use `ProxyServer` directly for more control over the server lifecycle.
+Use `ProxyServer` directly when you need lifecycle hooks or access to the underlying HTTP server:
 
 ```ts
 import { ProxyServer } from "@responsedotok/nrp";
 
-const server = new ProxyServer(config, hooks);
+const server = new ProxyServer(config, {
+  onRequest(ctx) {
+    console.log(`-> ${ctx.req.method} ${ctx.req.url}`);
+    return true; // return false to abort with 403
+  },
+  onResponse(ctx, statusCode) {
+    console.log(`<- ${statusCode}`);
+  },
+  onError(err, ctx) {
+    console.error(err.message, ctx.req?.url);
+  },
+});
+
 await server.listen();
 
-const httpServer = server.httpServer; // attach Socket.IO, etc.
+// Access the raw http.Server (e.g. to attach Socket.IO)
+const httpServer = server.httpServer;
 
-await server.close();       // drain in-flight requests (10 s default)
-await server.close(5_000);  // custom drain timeout in ms
+// Graceful shutdown — drains in-flight requests (default 10s timeout)
+await server.close();
 ```
 
-| Member | Type | Description |
-| --- | --- | --- |
-| `constructor(config, hooks?)` | — | Create a proxy server |
-| `listen()` | `Promise<void>` | Start listening and begin upstream health checks |
-| `close(drainTimeoutMs?)` | `Promise<void>` | Drain active requests then close. Defaults to 10 000 ms before force-close |
-| `httpServer` | `http.Server` | The underlying `node:http` server instance |
+---
 
-### Hooks
+## Configuration
 
-All hooks are optional.
-
-```ts
-interface Hooks {
-  onRequest?: (ctx: RequestContext) => boolean | Promise<boolean>;
-  onResponse?: (ctx: Context, statusCode: number) => void | Promise<void>;
-  onError?: (err: Error, ctx: Partial<Context>) => void;
-}
-```
-
-**`onRequest`** — called before forwarding. Return `false` to abort with `403`. If the hook throws, the proxy sends `502` and calls `onError`.
-
-| Field | Type | Description |
-| --- | --- | --- |
-| `req` | `http.IncomingMessage` | Incoming client request |
-| `route` | `Route` | The matched route |
-| `upstream` | `Upstream` | The selected upstream |
-| `targetPath` | `string` | The rewritten path sent upstream |
-
-**`onResponse`** — called after the upstream responds, before streaming to the client.
-
-**`onError`** — called on any proxying error, including WebSocket upstream errors. Context may be partial if the error occurred before route matching.
-
-## Config reference
-
-### ConfigType
+### Top-level fields
 
 | Field | Type | Default | Description |
 | --- | --- | --- | --- |
-| `port` | `number` | — | **Required.** Port to listen on (1–65535) |
+| `port` | `number` | -- | **Required.** Port to listen on |
 | `host` | `string` | `"0.0.0.0"` | Address to bind |
-| `routes` | `Route[]` | — | **Required.** Ordered route list — first match wins |
-| `headers` | `HeaderRules` | — | Global header rules applied to all routes |
-| `balancer` | `LoadBalancerStrategy` | `"round-robin"` | Default load-balancing strategy |
-| `timeout` | `number` | `30000` | Global upstream request timeout in ms |
-| `forwardIp` | `boolean` | `true` | Append `X-Forwarded-For`, `X-Forwarded-Host`, and `X-Forwarded-Proto` |
-| `maxBodySize` | `number` | — | Max request body in bytes; exceeding it returns `413` |
-| `healthCheck` | `{ interval?: number; timeout?: number }` | — | TCP health check settings (`interval` default 30 000 ms, `timeout` default 5 000 ms) |
+| `routes` | `Route[]` | -- | **Required.** Ordered list of routes (first match wins) |
+| `balancer` | `string` | `"round-robin"` | Default load balancer: `"round-robin"`, `"random"`, or `"weighted"` |
+| `timeout` | `number` | `30000` | Upstream request timeout in ms |
+| `maxBodySize` | `number` | -- | Max request body in bytes (returns `413` if exceeded) |
+| `forwardIp` | `boolean` | `true` | Add `X-Forwarded-For`, `X-Forwarded-Host`, `X-Forwarded-Proto` |
+| `healthCheck` | `object` | -- | `{ interval?: number, timeout?: number }` for TCP health probes |
+| `headers` | `HeaderRules` | -- | Global header rules (applied to all routes) |
 
-### Route
+### Route fields
 
 | Field | Type | Description |
 | --- | --- | --- |
-| `match` | `string` or `(pathname: string) => boolean` | Prefix string or custom predicate |
-| `upstreams` | `Upstream[]` | **Required.** One or more target servers |
+| `match` | `string` or `function` | URL prefix (`"/api"`) or `(pathname) => boolean` |
+| `upstreams` | `Upstream[]` | **Required.** Target servers |
 | `rewrite` | `RouteRewrite` | Path rewrite rules |
-| `headers` | `HeaderRules` | Per-route header rules (merged with global) |
-| `balancer` | `LoadBalancerStrategy` | Override the global balancer for this route |
+| `headers` | `HeaderRules` | Per-route header rules (merged on top of global) |
+| `balancer` | `string` | Override the global load balancer for this route |
 | `timeout` | `number` | Per-route upstream timeout in ms |
 | `maxBodySize` | `number` | Per-route body size limit in bytes |
 
-### Upstream
+### Upstream fields
 
 | Field | Type | Default | Description |
 | --- | --- | --- | --- |
-| `host` | `string` | — | **Required.** Hostname or IP |
-| `port` | `number` | — | **Required.** Port (1–65535) |
-| `protocol` | `"http"` or `"https"` | `"http"` | Use `"https"` for TLS upstreams and WSS WebSocket servers |
-| `weight` | `number` | `1` | Weight for the `"weighted"` balancer. Must be > 0 |
+| `host` | `string` | -- | **Required.** Hostname or IP |
+| `port` | `number` | -- | **Required.** Port |
+| `protocol` | `string` | `"http"` | `"http"` or `"https"` (use `"https"` for TLS/WSS) |
+| `weight` | `number` | `1` | Weight for the `"weighted"` balancer |
 
-### RouteRewrite
+### Path rewriting
+
+Rewrites are applied in order: `stripPrefix` then `addPrefix`. Using `replacePath` skips both.
+
+| Field | Description |
+| --- | --- |
+| `stripPrefix` | Remove this prefix from the incoming path |
+| `addPrefix` | Prepend this to the resulting path |
+| `replacePath` | Replace the entire path with this value |
+
+Example: incoming `/api/users/42` with `stripPrefix: "/api"` and `addPrefix: "/v1"` becomes `/v1/users/42`.
+
+### Header rules
 
 | Field | Type | Description |
 | --- | --- | --- |
-| `stripPrefix` | `string` | Remove this prefix from the incoming path |
-| `addPrefix` | `string` | Prepend this to the (possibly stripped) path |
-| `replacePath` | `string` | Replace the entire path — overrides `stripPrefix` and `addPrefix` |
+| `request` | `Record<string, string>` | Headers to add/override on the upstream request |
+| `response` | `Record<string, string>` | Headers to add/override on the client response |
+| `removeRequest` | `string[]` | Headers to strip from the upstream request |
+| `removeResponse` | `string[]` | Headers to strip from the client response |
 
-Application order: `stripPrefix` → `addPrefix`. `replacePath` skips both.
+Hop-by-hop headers (`connection`, `keep-alive`, `transfer-encoding`, etc.) are stripped automatically.
 
-### HeaderRules
+---
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `request` | `Record<string, string>` | Set/override headers on the forwarded request |
-| `response` | `Record<string, string>` | Set/override headers on the response to the client |
-| `removeRequest` | `string[]` | Strip these headers from the forwarded request |
-| `removeResponse` | `string[]` | Strip these headers from the response to the client |
+## Routing details
 
-### LoadBalancerStrategy
-
-`"round-robin"` | `"random"` | `"weighted"`
-
-## Routing
-
-Routes are evaluated in order — **first match wins**. Place more specific routes before less specific ones.
-
-### String prefix matching
+Routes are evaluated in the order they appear -- **first match wins**. Put specific routes before general ones.
 
 | `match` value | Matches |
 | --- | --- |
 | `"/"` | Everything (catch-all) |
 | `"/api"` | `/api`, `/api/`, `/api/users`, `/api?q=1` |
-| `"/api/v2"` | `/api/v2`, `/api/v2/users` — but **not** `/api/v1` |
+| `"/api/v2"` | `/api/v2`, `/api/v2/users` (not `/api/v1`) |
 
-### Custom predicate matching
-
-Pass a function for full control — receives the raw pathname (no query string).
+For regex or complex matching, use a function (requires a `.js`, `.mjs`, or `.ts` config file):
 
 ```ts
 {
@@ -323,159 +216,33 @@ Pass a function for full control — receives the raw pathname (no query string)
 }
 ```
 
-> **Note:** Function-based matches cannot be expressed in JSON config files. Use a `.js`, `.mjs`, or `.ts` config for this feature.
-
-## Path rewriting
-
-```text
-Incoming:  /api/users/42
-stripPrefix: "/api"   ->  /users/42
-addPrefix:   "/v1"    ->  /v1/users/42  (sent to upstream)
-```
-
-```json
-{
-  "match": "/api",
-  "rewrite": { "stripPrefix": "/api", "addPrefix": "/v1" },
-  "upstreams": [{ "host": "localhost", "port": 3001 }]
-}
-```
-
-Use `replacePath` to always send the same path regardless of the incoming URL:
-
-```json
-{
-  "match": "/health",
-  "rewrite": { "replacePath": "/healthz" },
-  "upstreams": [{ "host": "localhost", "port": 3001 }]
-}
-```
-
-## Header management
-
-The following happen automatically on every request:
-
-- **Hop-by-hop header stripping** — `connection`, `keep-alive`, `transfer-encoding`, `upgrade`, and related headers are removed from both directions.
-- **Host rewrite** — the `host` header is set to `upstream.host:upstream.port`.
-- **X-Forwarded headers** (when `forwardIp: true`): `X-Forwarded-For`, `X-Forwarded-Host`, `X-Forwarded-Proto`.
-
-Header rules at the top-level `headers` field apply to every route. Per-route rules are applied in addition to global rules (global first, then route-level).
-
-```json
-{
-  "headers": {
-    "response": { "X-Powered-By": "nrp" },
-    "removeResponse": ["server"]
-  },
-  "routes": [
-    {
-      "match": "/api",
-      "headers": { "request": { "X-Internal": "true" }, "removeRequest": ["cookie"] },
-      "upstreams": [{ "host": "localhost", "port": 3001 }]
-    }
-  ]
-}
-```
-
 ## Load balancing
 
-Set `balancer` at the top level (global default) or per-route to override it.
+- **`"round-robin"`** (default) -- cycles through upstreams in order
+- **`"random"`** -- picks one at random per request
+- **`"weighted"`** -- picks based on `weight` values (higher = more traffic)
 
-- **`"round-robin"`** (default) — distributes requests in a repeating cycle.
-- **`"random"`** — selects an upstream at random per request.
-- **`"weighted"`** — selects upstreams probabilistically by `weight` (default `1`). All weights must be > 0.
-
-```json
-{
-  "match": "/api",
-  "balancer": "weighted",
-  "upstreams": [
-    { "host": "localhost", "port": 3001, "weight": 3 },
-    { "host": "localhost", "port": 3002, "weight": 1 }
-  ]
-}
-```
-
-### Upstream failover
-
-When a route has multiple upstreams and a connection error occurs before any response has started, nrp automatically retries with the next untried upstream. Once all upstreams have been attempted, a `502 Bad Gateway` is returned.
+When a connection to an upstream fails before any response has started, nrp retries with the next upstream. If all upstreams fail, it returns `502 Bad Gateway`.
 
 ## Health checks
 
-nrp periodically probes each upstream via TCP and excludes unhealthy upstreams from load balancing. All upstreams start as healthy. If **all** upstreams for a route are unhealthy, the full list is used as a fallback to prevent a complete outage.
+Periodic TCP probes mark unreachable upstreams as unhealthy and exclude them from load balancing. If all upstreams for a route are unhealthy, the full list is used as a fallback.
 
 ```json
-{
-  "healthCheck": { "interval": 30000, "timeout": 5000 }
-}
+{ "healthCheck": { "interval": 30000, "timeout": 5000 } }
 ```
-
-| Field | Default | Description |
-| --- | --- | --- |
-| `interval` | `30000` | How often to probe each upstream, in ms |
-| `timeout` | `5000` | How long to wait for a TCP connection before marking unhealthy |
-
-## Request size limits
-
-Reject oversized bodies with `413 Payload Too Large` before any upstream connection is made. A per-route value takes precedence over the global one.
-
-```json
-{
-  "maxBodySize": 10485760,
-  "routes": [
-    {
-      "match": "/upload",
-      "maxBodySize": 104857600,
-      "upstreams": [{ "host": "localhost", "port": 3001 }]
-    }
-  ]
-}
-```
-
-Requests with a `content-length` exceeding the limit are rejected immediately. Chunked requests are checked as the body streams in.
 
 ## WebSocket proxying
 
-WebSocket upgrade requests are tunneled via raw TCP. Any route whose `match` covers the upgrade path handles it automatically — no extra configuration needed.
+Any route whose `match` covers the upgrade URL handles WebSocket connections automatically via raw TCP tunnel. For TLS upstreams (WSS), set `protocol: "https"`.
 
-For TLS upstreams (WSS), set `protocol: "https"` on the upstream:
-
-```json
-{
-  "match": "/ws",
-  "upstreams": [{ "host": "example.com", "port": 443, "protocol": "https" }]
-}
-```
-
-Path rewrites, load balancing, and health checks all apply to WebSocket connections. Upstream errors are routed through the `onError` hook.
-
-## Logging
-
-The CLI emits structured **newline-delimited JSON** on stdout (debug/info) and stderr (warn/error).
+## Building from source
 
 ```bash
-nrp --config ./proxy.config.json --log-level debug | npx pino-pretty
+npm install
+npm run build     # outputs ESM + CJS to dist/
+npm test -- --run # run tests once
 ```
-
-| Level | Output |
-| --- | --- |
-| `debug` | stdout |
-| `info` | stdout |
-| `warn` | stderr |
-| `error` | stderr |
-| `silent` | (none) |
-
-## Building and publishing
-
-```bash
-npm install          # install dependencies
-npx tsc --noEmit     # type-check
-npm test -- --run    # run tests
-npm run build        # outputs to dist/
-npm publish --access public  # runs build + tests via prepublishOnly
-```
-
-The build produces both **ESM** (`dist/*.mjs`) and **CommonJS** (`dist/cjs/*.js`) output, plus TypeScript declaration files.
 
 ## License
 
