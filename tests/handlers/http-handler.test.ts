@@ -1,8 +1,8 @@
-import type { ConfigType } from "@@/types/config.js";
 import http from "node:http";
 import net from "node:net";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
-import { HttpHandler } from "@/lib/handlers/http-handler.js";
+import { HttpHandler } from "../../src/lib/handlers/http-handler.js";
+import type { ConfigType } from "../../src/lib/types/config.js";
 
 function startServer(
 	handler: (req: http.IncomingMessage, res: http.ServerResponse) => void,

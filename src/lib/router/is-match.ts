@@ -1,4 +1,4 @@
-import type { Route } from "@@/types/route.js";
+import type { Route } from "../types/route.js";
 
 /**
  * Compare a route's match criteria against a pathname to determine

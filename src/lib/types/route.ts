@@ -1,6 +1,6 @@
-import type { HeaderRules } from "@@/types/header-rules.js";
-import type { RouteMatch } from "@@/types/route-match.js";
-import type { LoadBalancerStrategy } from "@/lib/types/load-balancer-strategy.js";
+import type { HeaderRules } from "./header-rules.js";
+import type { LoadBalancerStrategy } from "./load-balancer-strategy.js";
+import type { RouteMatch } from "./route-match.js";
 import type { RouteRewrite } from "./route-rewrite.js";
 import type { Upstream } from "./upstream.js";
 

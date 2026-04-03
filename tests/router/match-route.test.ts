@@ -1,6 +1,6 @@
-import { matchRoute } from "@@/router/match-route.js";
-import type { Route } from "@@/types/route.js";
 import { describe, expect, it } from "vitest";
+import { matchRoute } from "../../src/lib/router/match-route.js";
+import type { Route } from "../../src/lib/types/route.js";
 
 const upstream = { host: "localhost", port: 3000 };
 

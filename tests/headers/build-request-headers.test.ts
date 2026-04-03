@@ -1,7 +1,7 @@
-import { buildRequestHeaders } from "@@/headers/build-request-headers.js";
-import type { Upstream } from "@@/types/upstream.js";
 import type { IncomingMessage } from "node:http";
 import { describe, expect, it } from "vitest";
+import { buildRequestHeaders } from "../../src/lib/headers/build-request-headers.js";
+import type { Upstream } from "../../src/lib/types/upstream.js";
 
 function mockReq(
 	headers: Record<string, string> = {},

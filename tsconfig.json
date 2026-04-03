@@ -7,10 +7,6 @@
 		"rootDir": "./",
 		"exactOptionalPropertyTypes": true,
 		"noUncheckedIndexedAccess": true,
-		"paths": {
-			"@/*": ["./src/*"],
-			"@@/*": ["./src/lib/*"]
-		},
 		"types": ["node"],
 		"declaration": true,
 		"declarationMap": true,

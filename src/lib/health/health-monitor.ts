@@ -1,5 +1,5 @@
-import type { Upstream } from "@@/types/upstream.js";
 import net from "node:net";
+import type { Upstream } from "../types/upstream.js";
 
 /**
  * Periodically probes upstream servers via TCP and tracks which ones are reachable.

@@ -1,4 +1,4 @@
-import type { RouteRewrite } from "@@/types/route-rewrite.js";
+import type { RouteRewrite } from "../types/route-rewrite.js";
 
 /**
  * Apply rewrite rules to apply the forwarded path name.

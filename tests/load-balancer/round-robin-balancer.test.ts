@@ -1,6 +1,6 @@
-import { RoundRobinBalancer } from "@@/load-balancer/round-robin-balancer.js";
-import type { Upstream } from "@@/types/upstream.js";
 import { describe, expect, it } from "vitest";
+import { RoundRobinBalancer } from "../../src/lib/load-balancer/round-robin-balancer.js";
+import type { Upstream } from "../../src/lib/types/upstream.js";
 
 const a: Upstream = { host: "a", port: 1 };
 const b: Upstream = { host: "b", port: 2 };

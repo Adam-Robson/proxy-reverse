@@ -1,5 +1,5 @@
-import { rewritePath } from "@@/router/rewrite-path.js";
 import { describe, expect, it } from "vitest";
+import { rewritePath } from "../../src/lib/router/rewrite-path.js";
 
 describe("rewritePath", () => {
 	it("returns pathname unchanged when no rewrite provided", () => {

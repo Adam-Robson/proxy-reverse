@@ -2,10 +2,10 @@ import type { IncomingMessage } from "node:http";
 import net from "node:net";
 import type { Duplex } from "node:stream";
 import tls from "node:tls";
-import type { HttpHandler } from "@/lib/handlers/http-handler.js";
-import { buildRequestHeaders } from "@/lib/headers/build-request-headers.js";
-import { matchRoute } from "@/lib/router/match-route.js";
-import { rewritePath } from "@/lib/router/rewrite-path.js";
+import { buildRequestHeaders } from "../headers/build-request-headers.js";
+import { matchRoute } from "../router/match-route.js";
+import { rewritePath } from "../router/rewrite-path.js";
+import type { HttpHandler } from "./http-handler.js";
 
 /**
  * Handle WebSocket upgrade requests by tunneling raw TCP between the client and the upstream server.

@@ -2,8 +2,8 @@
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
 		"module": "commonjs",
-		"moduleResolution": "node",
-    "ignoreDeprecations": "6.0",
+		"moduleResolution": "node10",
+		"verbatimModuleSyntax": false,
 		"outDir": "./dist/cjs",
 		"declaration": false,
 		"declarationMap": false,

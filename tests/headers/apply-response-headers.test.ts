@@ -1,6 +1,6 @@
-import { applyResponseHeaders } from "@@/headers/apply-response-headers.js";
 import type { ServerResponse } from "node:http";
 import { describe, expect, it, vi } from "vitest";
+import { applyResponseHeaders } from "../../src/lib/headers/apply-response-headers.js";
 
 function mockRes(): ServerResponse {
 	return {

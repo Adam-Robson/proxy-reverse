@@ -1,17 +1,17 @@
-import type { ConfigType } from "@@/types/config.js";
-import type { Context } from "@@/types/context.js";
-import type { Hooks } from "@@/types/hooks.js";
-import type { LoadBalancer } from "@@/types/load-balancer.js";
-import type { Upstream } from "@@/types/upstream.js";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import http from "node:http";
 import https from "node:https";
-import { applyResponseHeaders } from "@/lib/headers/apply-response-headers.js";
-import { buildRequestHeaders } from "@/lib/headers/build-request-headers.js";
-import { HealthMonitor } from "@/lib/health/health-monitor.js";
-import { createBalancer } from "@/lib/load-balancer/create-balancer.js";
-import { matchRoute } from "@/lib/router/match-route.js";
-import { rewritePath } from "@/lib/router/rewrite-path.js";
+import { applyResponseHeaders } from "../headers/apply-response-headers.js";
+import { buildRequestHeaders } from "../headers/build-request-headers.js";
+import { HealthMonitor } from "../health/health-monitor.js";
+import { createBalancer } from "../load-balancer/create-balancer.js";
+import { matchRoute } from "../router/match-route.js";
+import { rewritePath } from "../router/rewrite-path.js";
+import type { ConfigType } from "../types/config.js";
+import type { Context } from "../types/context.js";
+import type { Hooks } from "../types/hooks.js";
+import type { LoadBalancer } from "../types/load-balancer.js";
+import type { Upstream } from "../types/upstream.js";
 
 export class HttpHandler {
 	private readonly balancers = new Map<string, LoadBalancer>();

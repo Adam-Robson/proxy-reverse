@@ -1,10 +1,10 @@
-import type { ConfigType } from "@@/types/config.js";
 import http from "node:http";
 import net from "node:net";
 import type { Duplex } from "node:stream";
 import { describe, expect, it, vi } from "vitest";
-import { HttpHandler } from "@/lib/handlers/http-handler.js";
-import { handleWebSocketUpgrade } from "@/lib/handlers/ws-handler.js";
+import { HttpHandler } from "../../src/lib/handlers/http-handler.js";
+import { handleWebSocketUpgrade } from "../../src/lib/handlers/ws-handler.js";
+import type { ConfigType } from "../../src/lib/types/config.js";
 
 function mockSocket() {
 	return {

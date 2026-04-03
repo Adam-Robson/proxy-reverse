@@ -1,5 +1,5 @@
-import { isMatch } from "@@/router/is-match.js";
-import type { Route } from "@@/types/route.js";
+import type { Route } from "../types/route.js";
+import { isMatch } from "./is-match.js";
 /**
  * Find the first matching route for a given request path.
  * @param routes The list of routes to match against.

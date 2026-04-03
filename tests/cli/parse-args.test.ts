@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseArgs } from "@/cli/parse-args.js";
+import { parseArgs } from "../../src/cli/parse-args.js";
 
 const base = ["node", "script"];
 

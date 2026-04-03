@@ -1,5 +1,5 @@
-import type { LoadBalancer } from "@@/types/load-balancer.js";
-import type { Upstream } from "@@/types/upstream.js";
+import type { LoadBalancer } from "../types/load-balancer.js";
+import type { Upstream } from "../types/upstream.js";
 
 export class RoundRobinBalancer implements LoadBalancer {
 	private counters = new Map<string, number>();

@@ -1,5 +1,5 @@
-import type { HeaderRules } from "@@/types/header-rules.js";
 import type { IncomingHttpHeaders, OutgoingHttpHeaders } from "node:http";
+import type { HeaderRules } from "../types/header-rules.js";
 
 /**
  * Apply header rules to the given headers.
