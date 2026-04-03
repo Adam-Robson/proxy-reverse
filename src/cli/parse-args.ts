@@ -1,4 +1,4 @@
-import type { LogLevel } from "@@/types/log-level.js";
+import type { LogLevel } from "../lib/types/log-level.js";
 
 export function parseArgs(argv: string[]): {
 	config: string;

@@ -1,9 +1,9 @@
-import type { ConfigType } from "@@/types/config.js";
-import type { Hooks } from "@@/types/hooks.js";
 import http from "node:http";
 import type { Duplex } from "node:stream";
-import { HttpHandler } from "@/lib/handlers/http-handler.js";
-import { handleWebSocketUpgrade } from "@/lib/handlers/ws-handler.js";
+import { HttpHandler } from "../handlers/http-handler.js";
+import { handleWebSocketUpgrade } from "../handlers/ws-handler.js";
+import type { ConfigType } from "../types/config.js";
+import type { Hooks } from "../types/hooks.js";
 
 export class ProxyServer {
 	private readonly server: http.Server;

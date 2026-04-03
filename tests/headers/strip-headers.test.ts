@@ -1,6 +1,6 @@
-import { stripHeaders } from "@@/headers/strip-headers.js";
 import type { IncomingHttpHeaders } from "node:http";
 import { describe, expect, it } from "vitest";
+import { stripHeaders } from "../../src/lib/headers/strip-headers.js";
 
 describe("stripHeaders", () => {
 	it("removes all standard hop-by-hop headers", () => {

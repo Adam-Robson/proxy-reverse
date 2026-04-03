@@ -1,6 +1,6 @@
-import { WeightedBalancer } from "@@/load-balancer/weighted-balancer.js";
-import type { Upstream } from "@@/types/upstream.js";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { WeightedBalancer } from "../../src/lib/load-balancer/weighted-balancer.js";
+import type { Upstream } from "../../src/lib/types/upstream.js";
 
 describe("WeightedBalancer", () => {
 	afterEach(() => vi.restoreAllMocks());

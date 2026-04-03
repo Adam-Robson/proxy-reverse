@@ -1,5 +1,5 @@
-import { isMatch } from "@@/router/is-match.js";
 import { describe, expect, it } from "vitest";
+import { isMatch } from "../../src/lib/router/is-match.js";
 
 describe("isMatch", () => {
 	it('"/" is a universal catch-all', () => {

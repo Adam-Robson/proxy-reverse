@@ -1,7 +1,7 @@
-import type { HeaderRules } from "@@/types/header-rules.js";
 import type { IncomingHttpHeaders, IncomingMessage } from "node:http";
-import { applyHeaderRules } from "@/lib/headers/apply-header-rules.js";
-import { stripHeaders } from "@/lib/headers/strip-headers.js";
+import type { HeaderRules } from "../types/header-rules.js";
+import { applyHeaderRules } from "./apply-header-rules.js";
+import { stripHeaders } from "./strip-headers.js";
 
 /**
  * Build the headers to send to the upstream, merging global + route rules.

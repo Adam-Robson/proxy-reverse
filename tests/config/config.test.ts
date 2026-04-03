@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { Config, loadConfig } from "@/config/config.js";
+import { Config, loadConfig } from "../../src/config/config.js";
 
 const validConfig = {
 	port: 8080,

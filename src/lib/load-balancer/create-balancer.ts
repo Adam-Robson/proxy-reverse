@@ -1,8 +1,8 @@
-import type { LoadBalancer } from "@@/types/load-balancer.js";
-import type { LoadBalancerStrategy } from "@@/types/load-balancer-strategy.js";
-import { RandomBalancer } from "@/lib/load-balancer/random-balancer.js";
-import { RoundRobinBalancer } from "@/lib/load-balancer/round-robin-balancer.js";
-import { WeightedBalancer } from "@/lib/load-balancer/weighted-balancer.js";
+import type { LoadBalancer } from "../types/load-balancer.js";
+import type { LoadBalancerStrategy } from "../types/load-balancer-strategy.js";
+import { RandomBalancer } from "./random-balancer.js";
+import { RoundRobinBalancer } from "./round-robin-balancer.js";
+import { WeightedBalancer } from "./weighted-balancer.js";
 
 /**
  * Factory function to create a load balancer based on the given strategy.

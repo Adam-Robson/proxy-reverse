@@ -1,6 +1,6 @@
-import { RandomBalancer } from "@@/load-balancer/random-balancer.js";
-import type { Upstream } from "@@/types/upstream.js";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { RandomBalancer } from "../../src/lib/load-balancer/random-balancer.js";
+import type { Upstream } from "../../src/lib/types/upstream.js";
 
 const upstreams: Upstream[] = [
 	{ host: "a", port: 1 },

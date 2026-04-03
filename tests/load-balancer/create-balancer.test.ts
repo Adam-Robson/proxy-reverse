@@ -1,8 +1,8 @@
-import { createBalancer } from "@@/load-balancer/create-balancer.js";
-import { RandomBalancer } from "@@/load-balancer/random-balancer.js";
-import { RoundRobinBalancer } from "@@/load-balancer/round-robin-balancer.js";
-import { WeightedBalancer } from "@@/load-balancer/weighted-balancer.js";
 import { describe, expect, it } from "vitest";
+import { createBalancer } from "../../src/lib/load-balancer/create-balancer.js";
+import { RandomBalancer } from "../../src/lib/load-balancer/random-balancer.js";
+import { RoundRobinBalancer } from "../../src/lib/load-balancer/round-robin-balancer.js";
+import { WeightedBalancer } from "../../src/lib/load-balancer/weighted-balancer.js";
 
 describe("createBalancer", () => {
 	it('creates a RoundRobinBalancer for "round-robin"', () => {

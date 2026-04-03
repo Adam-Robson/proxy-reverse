@@ -1,6 +1,6 @@
-import { applyHeaderRules } from "@@/headers/apply-header-rules.js";
 import type { IncomingHttpHeaders } from "node:http";
 import { describe, expect, it } from "vitest";
+import { applyHeaderRules } from "../../src/lib/headers/apply-header-rules.js";
 
 describe("applyHeaderRules", () => {
 	it("is a no-op when rules is null", () => {

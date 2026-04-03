@@ -1,4 +1,4 @@
-import { LEVELS, type LogLevel } from "@@/types/log-level.js";
+import { LEVELS, type LogLevel } from "../lib/types/log-level.js";
 
 export class Logger {
 	private readonly level: number;
